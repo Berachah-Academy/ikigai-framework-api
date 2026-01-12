@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Dict
-from mangum import Mangum
 from google import genai
 client = genai.Client()
 
