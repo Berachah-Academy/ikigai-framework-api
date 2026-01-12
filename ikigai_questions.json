@@ -1,0 +1,227 @@
+{
+  "questions": [
+    {
+      "id": "LOVE_Q1",
+      "element": "LOVE",
+      "question": "When you encounter a topic that interests you, what do you usually do?",
+      "options": [
+        { "text": "I read a little but usually forget about it", "score": 2 },
+        { "text": "I immediately start exploring it through videos, articles, or experiments", "score": 4 },
+        { "text": "I rarely pursue it further", "score": 1 },
+        { "text": "I make a mental note and explore it later when I have time", "score": 3 }
+      ]
+    },
+    {
+      "id": "LOVE_Q2",
+      "element": "LOVE",
+      "question": "When studying something you enjoy, how often do you lose track of time?",
+      "options": [
+        { "text": "Sometimes", "score": 2 },
+        { "text": "Almost always", "score": 4 },
+        { "text": "Rarely", "score": 1 },
+        { "text": "Often", "score": 3 }
+      ]
+    },
+    {
+      "id": "LOVE_Q3",
+      "element": "LOVE",
+      "question": "When working on a topic you like, how do you handle challenges?",
+      "options": [
+        { "text": "I avoid extra challenges", "score": 1 },
+        { "text": "I sometimes try harder problems", "score": 3 },
+        { "text": "I look for harder problems or projects", "score": 4 },
+        { "text": "I stick only to what is required", "score": 2 }
+      ]
+    },
+    {
+      "id": "LOVE_Q4",
+      "element": "LOVE",
+      "question": "How often do you explore topics purely out of curiosity?",
+      "options": [
+        { "text": "Occasionally", "score": 2 },
+        { "text": "Very often", "score": 4 },
+        { "text": "Rarely", "score": 1 },
+        { "text": "Often", "score": 3 }
+      ]
+    },
+    {
+      "id": "LOVE_Q5",
+      "element": "LOVE",
+      "question": "If there were no exams or grades, would you still learn certain topics?",
+      "options": [
+        { "text": "Yes, without hesitation", "score": 4 },
+        { "text": "Maybe, if I had time", "score": 3 },
+        { "text": "Only if required", "score": 2 },
+        { "text": "No, probably not", "score": 1 }
+      ]
+    },
+
+    {
+      "id": "SKILL_Q1",
+      "element": "SKILL",
+      "question": "When you understand something well, what do you usually do?",
+      "options": [
+        { "text": "I try to explain or teach it to others", "score": 4 },
+        { "text": "I keep it to myself", "score": 2 },
+        { "text": "I only use it when needed", "score": 3 },
+        { "text": "I move on without revisiting it", "score": 1 }
+      ]
+    },
+    {
+      "id": "SKILL_Q2",
+      "element": "SKILL",
+      "question": "How do you usually improve at something you are learning?",
+      "options": [
+        { "text": "Practice consistently until confident", "score": 4 },
+        { "text": "Practice occasionally", "score": 3 },
+        { "text": "Only practice when required", "score": 2 },
+        { "text": "Avoid practice if possible", "score": 1 }
+      ]
+    },
+    {
+      "id": "SKILL_Q3",
+      "element": "SKILL",
+      "question": "When facing a difficult task, what is your response?",
+      "options": [
+        { "text": "Break it down and experiment", "score": 4 },
+        { "text": "Try briefly and then seek help", "score": 3 },
+        { "text": "Wait for guidance", "score": 2 },
+        { "text": "Avoid it completely", "score": 1 }
+      ]
+    },
+    {
+      "id": "SKILL_Q4",
+      "element": "SKILL",
+      "question": "How often do you reflect on mistakes to improve?",
+      "options": [
+        { "text": "Always", "score": 4 },
+        { "text": "Sometimes", "score": 3 },
+        { "text": "Rarely", "score": 2 },
+        { "text": "Never", "score": 1 }
+      ]
+    },
+    {
+      "id": "SKILL_Q5",
+      "element": "SKILL",
+      "question": "When learning something new, how confident are you in mastering it?",
+      "options": [
+        { "text": "Very confident with effort", "score": 4 },
+        { "text": "Somewhat confident", "score": 3 },
+        { "text": "Unsure", "score": 2 },
+        { "text": "Not confident at all", "score": 1 }
+      ]
+    },
+
+    {
+      "id": "WORLD_Q1",
+      "element": "WORLD",
+      "question": "When you notice a problem around you, what do you usually do?",
+      "options": [
+        { "text": "Try to solve it or start something", "score": 4 },
+        { "text": "Talk about it with others", "score": 3 },
+        { "text": "Notice it but do nothing", "score": 2 },
+        { "text": "Ignore it", "score": 1 }
+      ]
+    },
+    {
+      "id": "WORLD_Q2",
+      "element": "WORLD",
+      "question": "How often do you feel motivated to help others?",
+      "options": [
+        { "text": "Very often", "score": 4 },
+        { "text": "Sometimes", "score": 3 },
+        { "text": "Rarely", "score": 2 },
+        { "text": "Almost never", "score": 1 }
+      ]
+    },
+    {
+      "id": "WORLD_Q3",
+      "element": "WORLD",
+      "question": "What usually motivates you to contribute to a group or community?",
+      "options": [
+        { "text": "Desire to make an impact", "score": 4 },
+        { "text": "Learning experience", "score": 3 },
+        { "text": "Only when required", "score": 2 },
+        { "text": "I usually avoid it", "score": 1 }
+      ]
+    },
+    {
+      "id": "WORLD_Q4",
+      "element": "WORLD",
+      "question": "How often do you participate in activities that benefit others?",
+      "options": [
+        { "text": "Frequently", "score": 4 },
+        { "text": "Occasionally", "score": 3 },
+        { "text": "Rarely", "score": 2 },
+        { "text": "Never", "score": 1 }
+      ]
+    },
+    {
+      "id": "WORLD_Q5",
+      "element": "WORLD",
+      "question": "When given responsibility to improve something for others, how do you feel?",
+      "options": [
+        { "text": "Excited and willing", "score": 4 },
+        { "text": "Open but cautious", "score": 3 },
+        { "text": "Reluctant", "score": 2 },
+        { "text": "Uninterested", "score": 1 }
+      ]
+    },
+
+    {
+      "id": "PAID_Q1",
+      "element": "PAID",
+      "question": "When completing a project, do you think about its real-world value?",
+      "options": [
+        { "text": "Always", "score": 4 },
+        { "text": "Sometimes", "score": 3 },
+        { "text": "Rarely", "score": 2 },
+        { "text": "Never", "score": 1 }
+      ]
+    },
+    {
+      "id": "PAID_Q2",
+      "element": "PAID",
+      "question": "How often do you explore skills that could help you earn money?",
+      "options": [
+        { "text": "Very often", "score": 4 },
+        { "text": "Often", "score": 3 },
+        { "text": "Occasionally", "score": 2 },
+        { "text": "Never", "score": 1 }
+      ]
+    },
+    {
+      "id": "PAID_Q3",
+      "element": "PAID",
+      "question": "When choosing a side project or hobby, what do you consider?",
+      "options": [
+        { "text": "Career or income potential", "score": 4 },
+        { "text": "Skill growth", "score": 3 },
+        { "text": "Only enjoyment", "score": 2 },
+        { "text": "No long-term thinking", "score": 1 }
+      ]
+    },
+    {
+      "id": "PAID_Q4",
+      "element": "PAID",
+      "question": "How comfortable are you turning a skill into a paid opportunity?",
+      "options": [
+        { "text": "Very comfortable", "score": 4 },
+        { "text": "Somewhat comfortable", "score": 3 },
+        { "text": "Uncomfortable", "score": 2 },
+        { "text": "Very uncomfortable", "score": 1 }
+      ]
+    },
+    {
+      "id": "PAID_Q5",
+      "element": "PAID",
+      "question": "How often do you research careers related to your interests?",
+      "options": [
+        { "text": "Frequently", "score": 4 },
+        { "text": "Sometimes", "score": 3 },
+        { "text": "Rarely", "score": 2 },
+        { "text": "Never", "score": 1 }
+      ]
+    }
+  ]
+}
