@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.ikigai import (
+from api.ikigai_feedback import (
     IkigaiRequest,
     IkigaiResponse,
     ElementScores,
