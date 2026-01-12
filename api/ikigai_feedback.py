@@ -109,7 +109,3 @@ def ikigai_feedback(req: IkigaiRequest):
         ikigai_alignment_score=ikigai_score,
         feedback=feedback
     )
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("api.ikigai_feedback:app", host="127.0.0.1", port=8000, reload=True)
