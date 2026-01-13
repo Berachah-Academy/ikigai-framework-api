@@ -22,7 +22,7 @@ class ElementScores(BaseModel):
     PAID: float
 
 class IkigaiResponse(BaseModel):
-    element_scores: ElementScores
+    ikigai_scores: ElementScores
     ikigai_alignment_score: float
     feedback: str
 
@@ -53,26 +53,26 @@ def calculate_element_score(responses, questions):
     return round((total/25)*100, 2)
 
 def calculate_ikigai_scores(responses):
-    element_scores = {el: calculate_element_score(responses, qs)
+    ikigai_scores = {el: calculate_element_score(responses, qs)
                       for el, qs in ELEMENT_QUESTIONS.items()}
     ikigai_score = round(
-        sum(element_scores[el]*IKIGAI_WEIGHTS[el] for el in element_scores), 2
+        sum(ikigai_scores[el]*IKIGAI_WEIGHTS[el] for el in ikigai_scores), 2
     )
-    return element_scores, ikigai_score
+    return ikigai_scores, ikigai_score
 
 # ---------------------------
 # Gemini feedback generator
 # ---------------------------
-def generate_feedback_gemini(element_scores, ikigai_score):
+def generate_feedback_gemini(ikigai_scores, ikigai_score):
     prompt = f"""
 You are a career guidance expert.
 Generate friendly, student-focused feedback based on these Ikigai scores:
 
 Scores:
-- Love: {element_scores['LOVE']}
-- Skill: {element_scores['SKILL']}
-- World Need: {element_scores['WORLD']}
-- Paid: {element_scores['PAID']}
+- Love: {ikigai_scores['LOVE']}
+- Skill: {ikigai_scores['SKILL']}
+- World Need: {ikigai_scores['WORLD']}
+- Paid: {ikigai_scores['PAID']}
 
 Overall Ikigai Alignment: {ikigai_score}
 
@@ -100,11 +100,11 @@ def ikigai_feedback(req: IkigaiRequest):
     if not req.responses:
         raise HTTPException(status_code=400, detail="No responses provided")
     
-    element_scores, ikigai_score = calculate_ikigai_scores(req.responses)
-    feedback = generate_feedback_gemini(element_scores, ikigai_score)
+    ikigai_scores, ikigai_score = calculate_ikigai_scores(req.responses)
+    feedback = generate_feedback_gemini(ikigai_scores, ikigai_score)
 
     return IkigaiResponse(
-        element_scores=ElementScores(**element_scores),
+        ikigai_scores=ElementScores(**ikigai_scores),
         ikigai_alignment_score=ikigai_score,
         feedback=feedback
     )
