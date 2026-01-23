@@ -12,7 +12,13 @@ app = FastAPI(title="Ikigai Feedback API", version="1.0")
 # ---------------------------
 # Request / Response Models
 # ---------------------------
+class UserInfo(BaseModel):
+    username: str
+    email: str | None = None
+    phone: str | None = None
+
 class IkigaiRequest(BaseModel):
+    user: UserInfo
     responses: Dict[str, str]
 
 class ElementScores(BaseModel):
@@ -63,12 +69,12 @@ def calculate_ikigai_scores(responses):
 # ---------------------------
 # Gemini feedback generator
 # ---------------------------
-def generate_feedback_gemini(ikigai_scores, ikigai_score):
+def generate_feedback_gemini(username, ikigai_scores, ikigai_score):
     prompt = f"""
-You are an experienced career guidance counselor speaking directly to a student.
+You are an experienced career guidance counselor speaking directly to a student named {username}.
 
-Based on the following Ikigai assessment scores, write a clear, friendly, and encouraging explanation in simple language. 
-Do not use headings, bullet points, numbering, emojis, symbols, or any text formatting. 
+Based on the following Ikigai assessment scores, write a clear, friendly, and encouraging explanation in simple language.
+Do not use headings, bullet points, numbering, emojis, symbols, or any text formatting.
 Write only in plain paragraphs.
 
 Ikigai Scores:
@@ -78,9 +84,9 @@ World Need: {ikigai_scores['WORLD']}
 Paid: {ikigai_scores['PAID']}
 Overall Alignment: {ikigai_score}
 
-Your response should naturally cover:
-- What these scores suggest about the student
-- The student’s strongest areas
+Your response should naturally address {username} by name at least once and cover:
+- What these scores suggest about {username}
+- Strongest areas
 - Areas that could improve with learning or experience
 - Two or three suitable career directions, explained briefly
 
@@ -89,10 +95,10 @@ Avoid generic advice and avoid repeating the score numbers.
 Return only the feedback text.
 """
 
-
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash", contents=prompt
+            model="gemini-2.5-flash",
+            contents=prompt
         )
         return response.text
     except Exception as e:
@@ -105,9 +111,15 @@ Return only the feedback text.
 def ikigai_feedback(req: IkigaiRequest):
     if not req.responses:
         raise HTTPException(status_code=400, detail="No responses provided")
-    
+
+    user = req.user
     ikigai_scores, ikigai_score = calculate_ikigai_scores(req.responses)
-    feedback = generate_feedback_gemini(ikigai_scores, ikigai_score)
+
+    feedback = generate_feedback_gemini(
+        username=user.username,
+        ikigai_scores=ikigai_scores,
+        ikigai_score=ikigai_score
+    )
 
     return IkigaiResponse(
         ikigai_scores=ElementScores(**ikigai_scores),
