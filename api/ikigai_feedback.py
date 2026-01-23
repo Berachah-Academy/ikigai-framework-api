@@ -29,7 +29,7 @@ class IkigaiResponse(BaseModel):
 # ---------------------------
 # Ikigai scoring config
 # ---------------------------
-OPTION_SCORE_MAP = {"A":1, "B":2, "C":3, "D":4, "E":5}
+OPTION_SCORE_MAP = {"A":1, "B":2, "C":3, "D":4}
 ELEMENT_QUESTIONS = {
     "LOVE": ["L1","L2","L3","L4","L5"],
     "SKILL": ["S1","S2","S3","S4","S5"],
@@ -50,7 +50,7 @@ def calculate_element_score(responses, questions):
         if option not in OPTION_SCORE_MAP:
             raise HTTPException(status_code=400, detail=f"Invalid option {q}: {option}")
         total += OPTION_SCORE_MAP[option]
-    return round((total/25)*100, 2)
+    return round((total/20)*100, 2)
 
 def calculate_ikigai_scores(responses):
     ikigai_scores = {el: calculate_element_score(responses, qs)
