@@ -65,24 +65,30 @@ def calculate_ikigai_scores(responses):
 # ---------------------------
 def generate_feedback_gemini(ikigai_scores, ikigai_score):
     prompt = f"""
-You are a career guidance expert.
-Generate friendly, student-focused feedback based on these Ikigai scores:
+You are an experienced career guidance counselor speaking directly to a student.
 
-Scores:
-- Love: {ikigai_scores['LOVE']}
-- Skill: {ikigai_scores['SKILL']}
-- World Need: {ikigai_scores['WORLD']}
-- Paid: {ikigai_scores['PAID']}
+Based on the following Ikigai assessment scores, write a clear, friendly, and encouraging explanation in simple language. 
+Do not use headings, bullet points, numbering, emojis, symbols, or any text formatting. 
+Write only in plain paragraphs.
 
-Overall Ikigai Alignment: {ikigai_score}
+Ikigai Scores:
+Love: {ikigai_scores['LOVE']}
+Skill: {ikigai_scores['SKILL']}
+World Need: {ikigai_scores['WORLD']}
+Paid: {ikigai_scores['PAID']}
+Overall Alignment: {ikigai_score}
 
-Explain:
-1. What these scores mean
-2. Strength areas
-3. Development areas
-4. 2-3 suggested career paths
-Keep it concise and written for a student audience.
+Your response should naturally cover:
+- What these scores suggest about the student
+- The student’s strongest areas
+- Areas that could improve with learning or experience
+- Two or three suitable career directions, explained briefly
+
+Keep the tone supportive, motivating, and easy for a student to understand.
+Avoid generic advice and avoid repeating the score numbers.
+Return only the feedback text.
 """
+
 
     try:
         response = client.models.generate_content(
