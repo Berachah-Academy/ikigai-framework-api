@@ -37,12 +37,12 @@ class IkigaiResponse(BaseModel):
 # ---------------------------
 OPTION_SCORE_MAP = {"A":1, "B":2, "C":3, "D":4}
 ELEMENT_QUESTIONS = {
-    "LOVE": ["L1","L2","L3","L4","L5"],
-    "SKILL": ["S1","S2","S3","S4","S5"],
-    "WORLD": ["W1","W2","W3","W4","W5"],
-    "PAID": ["P1","P2","P3","P4","P5"]
+    "love": ["L1","L2","L3","L4","L5"],
+    "skill": ["S1","S2","S3","S4","S5"],
+    "world": ["W1","W2","W3","W4","W5"],
+    "paid": ["P1","P2","P3","P4","P5"]
 }
-IKIGAI_WEIGHTS = {"LOVE":0.3, "SKILL":0.3, "WORLD":0.2, "PAID":0.2}
+IKIGAI_WEIGHTS = {"love":0.3, "skill":0.3, "world":0.2, "paid":0.2}
 
 # ---------------------------
 # Scoring functions
@@ -78,10 +78,10 @@ Do not use headings, bullet points, numbering, emojis, symbols, or any text form
 Write only in plain paragraphs.
 
 Ikigai Scores:
-Love: {ikigai_scores['love']}
-Skill: {ikigai_scores['skill']}
-World Need: {ikigai_scores['world']}
-Paid: {ikigai_scores['paid']}
+love: {ikigai_scores['love']}
+skill: {ikigai_scores['skill']}
+world Need: {ikigai_scores['world']}
+paid: {ikigai_scores['paid']}
 Overall Alignment: {ikigai_score}
 
 Your response should naturally address {username} by name at least once and cover:
