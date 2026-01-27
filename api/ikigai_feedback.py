@@ -22,10 +22,10 @@ class IkigaiRequest(BaseModel):
     responses: Dict[str, str]
 
 class ElementScores(BaseModel):
-    LOVE: float
-    SKILL: float
-    WORLD: float
-    PAID: float
+    love: float
+    skill: float
+    world: float
+    paid: float
 
 class IkigaiResponse(BaseModel):
     ikigai_scores: ElementScores
@@ -78,10 +78,10 @@ Do not use headings, bullet points, numbering, emojis, symbols, or any text form
 Write only in plain paragraphs.
 
 Ikigai Scores:
-Love: {ikigai_scores['LOVE']}
-Skill: {ikigai_scores['SKILL']}
-World Need: {ikigai_scores['WORLD']}
-Paid: {ikigai_scores['PAID']}
+Love: {ikigai_scores['love']}
+Skill: {ikigai_scores['skill']}
+World Need: {ikigai_scores['world']}
+Paid: {ikigai_scores['paid']}
 Overall Alignment: {ikigai_score}
 
 Your response should naturally address {username} by name at least once and cover:
