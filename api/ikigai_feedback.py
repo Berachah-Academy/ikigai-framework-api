@@ -30,7 +30,7 @@ class ElementScores(BaseModel):
 class IkigaiResponse(BaseModel):
     ikigai_scores: ElementScores
     ikigai_alignment_score: float
-    feedback: str
+    feedback: Dict[str, str]
 
 # ---------------------------
 # Ikigai scoring config
@@ -129,6 +129,12 @@ def ikigai_feedback(req: IkigaiRequest):
 
     feedback_text = generate_feedback_gemini(username, ikigai_scores, ikigai_score)
     feedback_dict = parse_feedback(feedback_text)
+    
+    print(feedback_dict["LOVE"])      # Advice for Love
+    print(feedback_dict["SKILL"])     # Advice for Skill
+    print(feedback_dict["WORLD"])     # Advice for World
+    print(feedback_dict["PAID"])      # Advice for Paid
+    print(feedback_dict["OVERALL"])   # Overall feedback
 
 
     return IkigaiResponse(
