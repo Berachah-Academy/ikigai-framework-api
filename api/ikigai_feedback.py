@@ -88,11 +88,12 @@ def generate_feedback_gemini(username, ikigai_scores, ikigai_score):
     prompt = f"""
 You are an experienced career guidance counselor speaking directly to a student named {username}.
 
-Provide a short, clear, and student-friendly piece of advice for each of the following Ikigai elements:
-1. Love
-2. Skill
-3. World Need
-4. Paid
+Provide a clear, and student-friendly piece of advice for each of the following Ikigai elements:
+1. Love - score {ikigai_scores["love"]}
+2. Skill - score {ikigai_scores["skill"]}
+3. World Need - score {ikigai_scores["world"]}
+4. Paid - score {ikigai_scores["paid"]}
+overall - {ikigai_score}
 
 Then provide overall feedback based on the alignment score.
 
