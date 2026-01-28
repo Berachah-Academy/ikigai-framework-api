@@ -69,30 +69,42 @@ def calculate_ikigai_scores(responses):
 # ---------------------------
 # Gemini feedback generator
 # ---------------------------
+def parse_feedback(feedback_text):
+    """
+    Convert Gemini output into a dictionary per element.
+    Expects each line in format:
+    ELEMENT: advice
+    """
+    feedback_dict = {}
+    lines = feedback_text.splitlines()
+    
+    for line in lines:
+        if ':' in line:
+            key, value = line.split(':', 1)
+            feedback_dict[key.strip().upper()] = value.strip()
+    return feedback_dict
+
 def generate_feedback_gemini(username, ikigai_scores, ikigai_score):
     prompt = f"""
 You are an experienced career guidance counselor speaking directly to a student named {username}.
 
-Based on the following Ikigai assessment scores, write a clear, friendly, and encouraging explanation in simple language.
-Do not use headings, bullet points, numbering, emojis, symbols, or any text formatting.
-Write only in plain paragraphs.
+Provide a short, clear, and student-friendly piece of advice for each of the following Ikigai elements:
+1. Love
+2. Skill
+3. World Need
+4. Paid
 
-Ikigai Scores:
-love: {ikigai_scores['love']}
-skill: {ikigai_scores['skill']}
-world Need: {ikigai_scores['world']}
-paid: {ikigai_scores['paid']}
-Overall Alignment: {ikigai_score}
+Then provide overall feedback based on the alignment score.
 
-Your response should naturally address {username} by name at least once and cover:
-- What these scores suggest about {username}
-- Strongest areas
-- Areas that could improve with learning or experience
-- Two or three suitable career directions, explained briefly
+Return the feedback **as a single string**, with each element's advice **on a separate line**, in this exact format:
 
-Keep the tone supportive, motivating, and easy for a student to understand.
-Avoid generic advice and avoid repeating the score numbers.
-Return only the feedback text.
+LOVE: <advice for love>
+SKILL: <advice for skill>
+WORLD: <advice for world>
+PAID: <advice for paid>
+OVERALL: <overall advice>
+
+Do not use headings, bullet points, numbering, emojis, symbols, or extra text. Keep it concise, friendly, and motivational.
 """
 
     try:
@@ -100,7 +112,7 @@ Return only the feedback text.
             model="gemini-2.5-flash",
             contents=prompt
         )
-        return response.text
+        return response.text.strip()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Gemini API error: {str(e)}")
 
@@ -112,17 +124,15 @@ def ikigai_feedback(req: IkigaiRequest):
     if not req.responses:
         raise HTTPException(status_code=400, detail="No responses provided")
 
-    user = req.user
+    username = req.user
     ikigai_scores, ikigai_score = calculate_ikigai_scores(req.responses)
 
-    feedback = generate_feedback_gemini(
-        username=user.username,
-        ikigai_scores=ikigai_scores,
-        ikigai_score=ikigai_score
-    )
+    feedback_text = generate_feedback_gemini(username, ikigai_scores, ikigai_score)
+    feedback_dict = parse_feedback(feedback_text)
+
 
     return IkigaiResponse(
         ikigai_scores=ElementScores(**ikigai_scores),
         ikigai_alignment_score=ikigai_score,
-        feedback=feedback
+        feedback=feedback_dict
     )
