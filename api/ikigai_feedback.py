@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import requests
+import re
 from datetime import datetime
 from typing import Dict
 from google import genai
@@ -50,7 +51,8 @@ def save_to_firebase(user: UserInfo, responses, ikigai_scores, ikigai_score, fee
     """
 
     # Use email if present, else username (firebase-safe key)
-    user_key = (user.email or user.username).replace(".", "_")
+    raw_key = user.email or user.username
+    user_key = re.sub(r'[.$#[\]/@]', "_", raw_key)
 
     timestamp = datetime.utcnow().isoformat()
 
