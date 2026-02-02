@@ -12,7 +12,7 @@ FIREBASE_DB_URL = "https://berachah-academy-default-rtdb.firebaseio.com"
 IKIGAI_NODE = "ikigai-assessment"
 
 
-def save_to_firebase(user: UserInfo, responses, ikigai_scores, ikigai_score, feedback):
+def save_to_firebase(user, responses, ikigai_scores, ikigai_score, feedback):
     # Firebase-safe user key
     raw_key = user.email or user.username
     user_key = re.sub(r'[.$#[\]/@]', "_", raw_key)
