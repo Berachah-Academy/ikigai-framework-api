@@ -126,24 +126,33 @@ def generate_feedback_gemini(username, ikigai_scores, ikigai_score):
     prompt = f"""
 You are an experienced career guidance counselor speaking directly to a student named {username}.
 
-Provide a detail clear, and student-friendly piece of advice for each of the following Ikigai elements and score by the user:
+Provide clear, practical, and student-friendly advice for each Ikigai element and score below.  
+For EVERY element, you MUST include:
+- What this score means for the student
+- What they should do NEXT (specific actions such as learning topics, practice ideas, projects, internships, certifications, or exploration steps)
+- One short example of a concrete next step they can start this week
+
+Ikigai scores:
 1. Love - score {ikigai_scores["love"]}
 2. Skill - score {ikigai_scores["skill"]}
 3. World Need - score {ikigai_scores["world"]}
 4. Paid - score {ikigai_scores["paid"]}
-overall - {ikigai_score}
+Overall - {ikigai_score}
 
-Then provide overall feedback based on the alignment score.
+Then provide overall feedback based on the alignment score, including:
+- Current career readiness level
+- 2-3 priority focus areas
+- A simple 30-60 day action direction
 
-Return the feedback **as a single string**, with each element's advice **on a separate line**, in this exact format:
+Return the feedback as a single string, with each element's advice on a separate line, in this exact format:
 
-LOVE: <advice for love>
-SKILL: <advice for skill>
-WORLD: <advice for world>
-PAID: <advice for paid>
-OVERALL: <overall advice>
+LOVE: <advice for love including next steps>
+SKILL: <advice for skill including next steps>
+WORLD: <advice for world including next steps>
+PAID: <advice for paid including next steps>
+OVERALL: <overall advice with priorities and 30-60 day direction>
 
-Do not use headings, bullet points, numbering, emojis, symbols, or extra text. Keep it concise, friendly, and motivational.
+Do not use headings, bullet points, numbering, emojis, symbols, or extra text. Keep it concise, friendly, motivational, and action-oriented.
 """
 
     try:
