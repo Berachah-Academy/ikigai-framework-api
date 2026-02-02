@@ -4,6 +4,44 @@ from typing import Dict
 from google import genai
 client = genai.Client()
 
+import re
+import requests
+from datetime import datetime
+
+FIREBASE_DB_URL = "https://berachah-academy-default-rtdb.firebaseio.com"
+IKIGAI_NODE = "ikigai-assessment"
+
+
+def save_to_firebase(user: UserInfo, responses, ikigai_scores, ikigai_score, feedback):
+    # Firebase-safe user key
+    raw_key = user.email or user.username
+    user_key = re.sub(r'[.$#[\]/@]', "_", raw_key)
+
+    payload = {
+        "username": user.username,
+        "email": user.email,
+        "phone": user.phone,
+        "submitted_at": datetime.utcnow().isoformat(),
+        "responses": responses,
+        "ikigai_scores": ikigai_scores,
+        "ikigai_alignment_score": ikigai_score,
+        "feedback": feedback
+    }
+
+    url = f"{FIREBASE_DB_URL}/{IKIGAI_NODE}/{user_key}.json"
+
+    try:
+        # POST = append
+        r = requests.post(url, json=payload, timeout=6)
+
+        # Log only — NEVER raise
+        if not r.ok:
+            print("Firebase write failed:", r.status_code, r.text)
+
+    except Exception as e:
+        # Never crash API because of Firebase
+        print("Firebase exception:", str(e))
+
 # ---------------------------
 # FastAPI app
 # ---------------------------
@@ -131,12 +169,13 @@ def ikigai_feedback(req: IkigaiRequest):
     feedback_text = generate_feedback_gemini(username, ikigai_scores, ikigai_score)
     feedback_dict = parse_feedback(feedback_text)
     
-    print(feedback_dict["LOVE"])      # Advice for Love
-    print(feedback_dict["SKILL"])     # Advice for Skill
-    print(feedback_dict["WORLD"])     # Advice for World
-    print(feedback_dict["PAID"])      # Advice for Paid
-    print(feedback_dict["OVERALL"])   # Overall feedback
-
+    save_to_firebase(
+        user=req.user,
+        responses=req.responses,
+        ikigai_scores=ikigai_scores,
+        ikigai_score=ikigai_score,
+        feedback=feedback_dict
+    )
 
     return IkigaiResponse(
         ikigai_scores=ElementScores(**ikigai_scores),
