@@ -14,7 +14,7 @@ IKIGAI_NODE = "ikigai-assessment"
 
 def save_to_firebase(user, responses, ikigai_scores, ikigai_score, feedback):
     # Firebase-safe user key
-    raw_key = user.email or user.username
+    raw_key = user.email
     user_key = re.sub(r'[.$#[\]/@]', "_", raw_key)
 
     payload = {
