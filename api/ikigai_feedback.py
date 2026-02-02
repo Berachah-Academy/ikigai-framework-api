@@ -1,8 +1,5 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import requests
-import re
-from datetime import datetime
 from typing import Dict
 from google import genai
 client = genai.Client()
@@ -34,47 +31,6 @@ class IkigaiResponse(BaseModel):
     ikigai_scores: ElementScores
     ikigai_alignment_score: float
     feedback: Dict[str, str]
-
-# ---------------------------
-# Firebase Realtime DB
-# ---------------------------
-
-FIREBASE_DB_URL = "https://berachah-academy-default-rtdb.firebaseio.com"
-IKIGAI_NODE = "ikigai-assessment"
-
-
-def save_to_firebase(user: UserInfo, responses, ikigai_scores, ikigai_score, feedback):
-    """
-    Saves assessment to Firebase.
-    Uses email (preferred) or username as user key.
-    Each submission is appended with timestamp.
-    """
-
-    # Use email if present, else username (firebase-safe key)
-    raw_key = user.email or user.username
-    user_key = re.sub(r'[.$#[\]/@]', "_", raw_key)
-
-    timestamp = datetime.utcnow().isoformat()
-
-    payload = {
-        "username": user.username,
-        "email": user.email,
-        "phone": user.phone,
-        "submitted_at": timestamp,
-        "responses": responses,
-        "ikigai_scores": ikigai_scores,
-        "ikigai_alignment_score": ikigai_score,
-        "feedback": feedback
-    }
-
-    # POST will append under the user node
-    url = f"{FIREBASE_DB_URL}/{IKIGAI_NODE}/{user_key}.json"
-
-    r = requests.post(url, json=payload)
-
-    if not r.ok:
-        raise HTTPException(status_code=500, detail="Failed to save data to Firebase")
-
 
 # ---------------------------
 # Ikigai scoring config
@@ -169,21 +125,18 @@ def ikigai_feedback(req: IkigaiRequest):
     if not req.responses:
         raise HTTPException(status_code=400, detail="No responses provided")
 
-    username = req.user.username
-
+    username = req.user
     ikigai_scores, ikigai_score = calculate_ikigai_scores(req.responses)
 
     feedback_text = generate_feedback_gemini(username, ikigai_scores, ikigai_score)
     feedback_dict = parse_feedback(feedback_text)
+    
+    print(feedback_dict["LOVE"])      # Advice for Love
+    print(feedback_dict["SKILL"])     # Advice for Skill
+    print(feedback_dict["WORLD"])     # Advice for World
+    print(feedback_dict["PAID"])      # Advice for Paid
+    print(feedback_dict["OVERALL"])   # Overall feedback
 
-    # Save to Firebase (append if user exists)
-    save_to_firebase(
-        user=req.user,
-        responses=req.responses,
-        ikigai_scores=ikigai_scores,
-        ikigai_score=ikigai_score,
-        feedback=feedback_dict
-    )
 
     return IkigaiResponse(
         ikigai_scores=ElementScores(**ikigai_scores),
