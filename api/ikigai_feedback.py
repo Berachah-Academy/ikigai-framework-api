@@ -191,3 +191,4 @@ def ikigai_feedback(req: IkigaiRequest):
         ikigai_alignment_score=ikigai_score,
         feedback=feedback_dict
     )
+ #
