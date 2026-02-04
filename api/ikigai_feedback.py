@@ -157,21 +157,6 @@ def calculate_ikigai_scores(responses):
 # ---------------------------
 # Gemini feedback generator
 # ---------------------------
-def parse_feedback(feedback_text):
-    """
-    Convert Gemini output into a dictionary per element.
-    Expects each line in format:
-    ELEMENT: advice
-    """
-    feedback_dict = {}
-    lines = feedback_text.splitlines()
-    
-    for line in lines:
-        if ':' in line:
-            key, value = line.split(':', 1)
-            feedback_dict[key.strip().upper()] = value.strip()
-    return feedback_dict
-
 def generate_feedback_gemini(username, ikigai_scores, ikigai_score, responses):
     user_qna = build_user_qna(responses)
     prompt = f"""
@@ -182,46 +167,68 @@ Below are the student's exact answers:
 {user_qna}
 
 Ikigai scores:
-1. Love - score {ikigai_scores["love"]}
-2. Skill - score {ikigai_scores["skill"]}
-3. World Need - score {ikigai_scores["world"]}
-4. Paid - score {ikigai_scores["paid"]}
-Overall - {ikigai_score}
+Love: {ikigai_scores["love"]}
+Skill: {ikigai_scores["skill"]}
+World Need: {ikigai_scores["world"]}
+Paid: {ikigai_scores["paid"]}
+Overall: {ikigai_score}
 
-Use BOTH the student's answers AND the scores to give personalized guidance.
+Use BOTH the student's answers AND the scores.
 
-For EACH Ikigai element, analyze:
-- What their answers reveal about their current habits, mindset, or behavior
-- What the score indicates about their present level
-- What they specifically need to improve NEXT based on BOTH answers and score
+For EACH Ikigai element:
+- Explain what their answers + score mean
+- Give clear personalized feedback
+- Give practical improvement actions
+- Provide specific "what to do next"
 
-For EVERY element, you MUST include:
-- What this score + answers mean for the student
-- Exactly what they should do to improve this area (clear skill-building, exploration, or experience-based actions)
-- One short concrete step they can start this week that directly addresses their weakest patterns from the answers
+For OVERALL:
+- Give career readiness feedback
+- List 2-3 priority gaps
+- Provide a detailed 30 day action plan broken into weekly steps
 
-Then provide overall feedback based on the alignment score and answer patterns, including:
-- Current career readiness level
-- 2-3 priority improvement areas
-- A practical 30 day action direction focused on closing their biggest gaps
+Return ONLY valid JSON in this exact structure:
 
-Return the feedback as a single string, with each element's advice on a separate line, in this exact format:
+{
+  "love": {
+    "feedback": "",
+    "todo": ""
+  },
+  "skill": {
+    "feedback": "",
+    "todo": ""
+  },
+  "world": {
+    "feedback": "",
+    "todo": ""
+  },
+  "paid": {
+    "feedback": "",
+    "todo": ""
+  },
+  "overall": {
+    "feedback": "",
+    "30_day_plan": ""
+  }
+}
 
-LOVE: <advice for love including next steps>
-SKILL: <advice for skill including next steps>
-WORLD: <advice for world including next steps>
-PAID: <advice for paid including next steps>
-OVERALL: <overall advice with priorities and 30-60 day direction>
-
-Do not use headings, bullet points, numbering, emojis, symbols, or extra text. Keep it concise, friendly, motivational, and action-oriented.
+Do NOT include markdown, headings, bullets, emojis, or extra text. Only pure JSON.
 """
-
     try:
         response = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt
         )
-        return response.text.strip()
+
+        raw_text = response.text.strip()
+
+        # Convert Gemini output into Python dict
+        feedback_json = json.loads(raw_text)
+
+        return feedback_json
+
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Invalid JSON returned from Gemini")
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Gemini API error: {str(e)}")
 
@@ -234,21 +241,27 @@ def ikigai_feedback(req: IkigaiRequest):
         raise HTTPException(status_code=400, detail="No responses provided")
 
     username = req.user
+
     ikigai_scores, ikigai_score = calculate_ikigai_scores(req.responses)
 
-    feedback_text = generate_feedback_gemini(username, ikigai_scores, ikigai_score, req.responses)
-    feedback_dict = parse_feedback(feedback_text)
-    
+    # Gemini now returns JSON directly
+    feedback_json = generate_feedback_gemini(
+        username,
+        ikigai_scores,
+        ikigai_score,
+        req.responses
+    )
+
     save_to_firebase(
         user=req.user,
         responses=req.responses,
         ikigai_scores=ikigai_scores,
         ikigai_score=ikigai_score,
-        feedback=feedback_dict
+        feedback=feedback_json
     )
 
     return IkigaiResponse(
         ikigai_scores=ElementScores(**ikigai_scores),
         ikigai_alignment_score=ikigai_score,
-        feedback=feedback_dict
+        feedback=feedback_json
     )
