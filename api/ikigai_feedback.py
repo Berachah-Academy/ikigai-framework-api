@@ -236,7 +236,7 @@ def ikigai_feedback(req: IkigaiRequest):
     username = req.user
     ikigai_scores, ikigai_score = calculate_ikigai_scores(req.responses)
 
-    feedback_text = generate_feedback_gemini(username, ikigai_scores, ikigai_score)
+    feedback_text = generate_feedback_gemini(username, ikigai_scores, ikigai_score, req.responses)
     feedback_dict = parse_feedback(feedback_text)
     
     save_to_firebase(
