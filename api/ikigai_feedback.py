@@ -8,6 +8,56 @@ import re
 import requests
 from datetime import datetime
 
+import json
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+QUESTIONS_FILE = os.path.join(BASE_DIR, "ikigai_questions.json")
+
+with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
+    QUESTIONS_DATA = json.load(f)["questions"]
+
+# Group questions by element
+QUESTIONS_BY_ELEMENT = {}
+for q in QUESTIONS_DATA:
+    QUESTIONS_BY_ELEMENT.setdefault(q["element"].lower(), []).append(q)
+
+def build_user_qna(responses):
+    """
+    Returns formatted string of:
+    Element
+    Question
+    Selected answer
+    """
+
+    result = []
+
+    for element, questions in QUESTIONS_BY_ELEMENT.items():
+        result.append(f"{element.upper()}:")
+
+        for idx, q in enumerate(questions, start=1):
+            key = f"{element[0].upper()}{idx}"  # L1, S1, W1, P1
+
+            if key not in responses:
+                continue
+
+            selected_score = OPTION_SCORE_MAP.get(responses[key])
+
+            chosen_text = "Unknown"
+
+            for opt in q["options"]:
+                if opt["score"] == selected_score:
+                    chosen_text = opt["text"]
+                    break
+
+            result.append(f"- Q: {q['question']}")
+            result.append(f"- A: {chosen_text}")
+
+        result.append("")
+
+    return "\n".join(result)
+
+
 FIREBASE_DB_URL = "https://berachah-academy-default-rtdb.firebaseio.com"
 IKIGAI_NODE = "ikigai-assessment"
 
@@ -122,15 +172,14 @@ def parse_feedback(feedback_text):
             feedback_dict[key.strip().upper()] = value.strip()
     return feedback_dict
 
-def generate_feedback_gemini(username, ikigai_scores, ikigai_score):
+def generate_feedback_gemini(username, ikigai_scores, ikigai_score, responses):
+    user_qna = build_user_qna(responses)
     prompt = f"""
 You are an experienced career guidance counselor speaking directly to a student named {username}.
 
-Provide clear, practical, and student-friendly advice for each Ikigai element and score below.  
-For EVERY element, you MUST include:
-- What this score means for the student
-- What they should do NEXT (specific actions such as learning topics, practice ideas, projects, internships, certifications, or exploration steps)
-- One short example of a concrete next step they can start this week
+Below are the student's exact answers:
+
+{user_qna}
 
 Ikigai scores:
 1. Love - score {ikigai_scores["love"]}
@@ -139,10 +188,22 @@ Ikigai scores:
 4. Paid - score {ikigai_scores["paid"]}
 Overall - {ikigai_score}
 
-Then provide overall feedback based on the alignment score, including:
+Use BOTH the student's answers AND the scores to give personalized guidance.
+
+For EACH Ikigai element, analyze:
+- What their answers reveal about their current habits, mindset, or behavior
+- What the score indicates about their present level
+- What they specifically need to improve NEXT based on BOTH answers and score
+
+For EVERY element, you MUST include:
+- What this score + answers mean for the student
+- Exactly what they should do to improve this area (clear skill-building, exploration, or experience-based actions)
+- One short concrete step they can start this week that directly addresses their weakest patterns from the answers
+
+Then provide overall feedback based on the alignment score and answer patterns, including:
 - Current career readiness level
-- 2-3 priority focus areas
-- A simple 30-60 day action direction
+- 2-3 priority improvement areas
+- A practical 30 day action direction focused on closing their biggest gaps
 
 Return the feedback as a single string, with each element's advice on a separate line, in this exact format:
 
@@ -191,4 +252,3 @@ def ikigai_feedback(req: IkigaiRequest):
         ikigai_alignment_score=ikigai_score,
         feedback=feedback_dict
     )
- #
