@@ -183,6 +183,28 @@ def calculate_ikigai_scores(responses):
 # ---------------------------
 # Gemini feedback generator
 # ---------------------------
+MODELS = [
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
+    "gemini-2.0-flash"
+]
+
+def generate_with_fallback(prompt):
+    last_error = None
+
+    for model in MODELS:
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt
+            )
+            return response
+        except Exception as e:
+            last_error = e
+            print(f"{model} failed")
+
+    raise HTTPException(status_code=500, detail=str(last_error))
+
 def generate_feedback_gemini(username, ikigai_scores, ikigai_score, responses):
     user_qna = build_user_qna(responses)
     prompt = f"""
@@ -251,10 +273,7 @@ Return ONLY valid JSON in this exact structure:
 Do NOT include markdown, headings, bullets, emojis, or extra text. Only pure JSON.
 """
     try:
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
-        )
+        response = generate_with_fallback(prompt)
 
         raw_text = response.text.strip()
 
