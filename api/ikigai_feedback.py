@@ -124,6 +124,7 @@ class WeeklyPlan(BaseModel):
     week4: str
 
 class ElementFeedback(BaseModel):
+    summary: str
     feedback: str
     todo: str
 
@@ -211,22 +212,28 @@ For OVERALL:
 - List 2-3 priority gaps
 - Provide a detailed 30 day action plan broken into weekly steps
 
+For each element, also provide a very short micro summary (maximum 5 words) describing the student's current status (for example: "Exploring interests", "Needs consistent practice", "Unclear career direction").
+
 Return ONLY valid JSON in this exact structure:
 
 {{
   "love": {{
+    "summary": "",
     "feedback": "",
     "todo": ""
   }},
   "skill": {{
+    "summary": "",
     "feedback": "",
     "todo": ""
   }},
   "world": {{
+    "summary": "",
     "feedback": "",
     "todo": ""
   }},
   "paid": {{
+    "summary": "",
     "feedback": "",
     "todo": ""
   }},
