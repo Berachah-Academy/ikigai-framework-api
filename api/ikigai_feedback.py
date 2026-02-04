@@ -115,10 +115,35 @@ class ElementScores(BaseModel):
     world: float
     paid: float
 
+# ---------------- Feedback Models ----------------
+
+class WeeklyPlan(BaseModel):
+    week1: str
+    week2: str
+    week3: str
+    week4: str
+
+class ElementFeedback(BaseModel):
+    feedback: str
+    todo: str
+
+class OverallFeedback(BaseModel):
+    feedback: str
+    plan: WeeklyPlan
+
+class Feedback(BaseModel):
+    love: ElementFeedback
+    skill: ElementFeedback
+    world: ElementFeedback
+    paid: ElementFeedback
+    overall: OverallFeedback
+
+# ---------------- Final Response ----------------
+
 class IkigaiResponse(BaseModel):
     ikigai_scores: ElementScores
     ikigai_alignment_score: float
-    feedback: Dict[str, str]
+    feedback: Feedback
 
 # ---------------------------
 # Ikigai scoring config
@@ -245,11 +270,12 @@ def ikigai_feedback(req: IkigaiRequest):
     if not req.responses:
         raise HTTPException(status_code=400, detail="No responses provided")
 
-    username = req.user
+    # Extract username correctly
+    username = req.user.username
 
     ikigai_scores, ikigai_score = calculate_ikigai_scores(req.responses)
 
-    # Gemini now returns JSON directly
+    # Gemini returns structured JSON
     feedback_json = generate_feedback_gemini(
         username,
         ikigai_scores,
@@ -261,12 +287,12 @@ def ikigai_feedback(req: IkigaiRequest):
         user=req.user,
         responses=req.responses,
         ikigai_scores=ikigai_scores,
-        ikigai_score=ikigai_score,
+        ikigai_score=float(ikigai_score),
         feedback=feedback_json
     )
 
     return IkigaiResponse(
         ikigai_scores=ElementScores(**ikigai_scores),
-        ikigai_alignment_score=ikigai_score,
+        ikigai_alignment_score=float(ikigai_score),
         feedback=feedback_json
     )
