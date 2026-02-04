@@ -188,33 +188,33 @@ For OVERALL:
 
 Return ONLY valid JSON in this exact structure:
 
-{
-  "love": {
+{{
+  "love": {{
     "feedback": "",
     "todo": ""
-  },
-  "skill": {
+  }},
+  "skill": {{
     "feedback": "",
     "todo": ""
-  },
-  "world": {
+  }},
+  "world": {{
     "feedback": "",
     "todo": ""
-  },
-  "paid": {
+  }},
+  "paid": {{
     "feedback": "",
     "todo": ""
-  },
-  "overall": {
+  }},
+  "overall": {{
     "feedback": "",
-    "plan": {
+    "plan": {{
       "week1": "",
       "week2": "",
       "week3": "",
       "week4": ""
-    }
-  }
-}
+    }}
+  }}
+}}
 
 Do NOT include markdown, headings, bullets, emojis, or extra text. Only pure JSON.
 """
