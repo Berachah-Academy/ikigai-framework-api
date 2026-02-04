@@ -207,7 +207,12 @@ Return ONLY valid JSON in this exact structure:
   },
   "overall": {
     "feedback": "",
-    "30_day_plan": ""
+    "plan": {
+      "week1": "",
+      "week2": "",
+      "week3": "",
+      "week4": ""
+    }
   }
 }
 
