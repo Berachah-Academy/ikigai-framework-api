@@ -4,9 +4,9 @@ from typing import Dict
 from google import genai
 client = genai.Client()
 
-import re
 import requests
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import json
 import os
@@ -59,37 +59,52 @@ def build_user_qna(responses):
 
 
 FIREBASE_DB_URL = "https://berachah-academy-default-rtdb.firebaseio.com"
-IKIGAI_NODE = "ikigai-assessment"
+IKIGAI_NODE = "ikigai-assessment/user"
 
+def save_to_firebase(user, test_id, responses, ikigai_scores, ikigai_score, feedback):
+    import re
 
-def save_to_firebase(user, responses, ikigai_scores, ikigai_score, feedback):
     # Firebase-safe user key
     raw_key = user.email
     user_key = re.sub(r'[.$#[\]/@]', "_", raw_key)
 
+    # Prepare new attempt payload
     payload = {
-        "username": user.username,
-        "email": user.email,
-        "phone": user.phone,
-        "submitted_at": datetime.utcnow().isoformat(),
+        "testId": test_id,  # placeholder, will set next
+        "submitted_at": datetime.now(ZoneInfo("Asia/Kolkata")).isoformat(),
         "responses": responses,
         "ikigai_scores": ikigai_scores,
         "ikigai_alignment_score": ikigai_score,
         "feedback": feedback
     }
 
-    url = f"{FIREBASE_DB_URL}/{IKIGAI_NODE}/{user_key}.json"
+    # Base URL for this user
+    base_url = f"{FIREBASE_DB_URL}/{IKIGAI_NODE}/{user_key}"
 
     try:
-        # POST = append
-        r = requests.post(url, json=payload, timeout=6)
+        # Fetch existing user node
+        r = requests.get(f"{base_url}.json", timeout=6)
+        data = r.json() if r.ok and r.json() else {}
 
-        # Log only — NEVER raise
-        if not r.ok:
-            print("Firebase write failed:", r.status_code, r.text)
+        # If user does not exist yet, create root info
+        if not data:
+            return
+        
+        # Normalize attempts list
+        attempts = data.get("attempts", [])
+        if not isinstance(attempts, list):
+            attempts = []
+
+        # Append new attempt
+        attempts.append(payload)
+        data["attempts"] = attempts
+
+        # Write back to Firebase
+        w = requests.put(f"{base_url}.json", json=data, timeout=6)
+        if not w.ok:
+            print("Firebase write failed:", w.status_code, w.text)
 
     except Exception as e:
-        # Never crash API because of Firebase
         print("Firebase exception:", str(e))
 
 # ---------------------------
