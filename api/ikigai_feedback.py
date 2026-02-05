@@ -70,7 +70,7 @@ def save_to_firebase(user, test_id, responses, ikigai_scores, ikigai_score, feed
 
     # Prepare new attempt payload
     payload = {
-        "testId": test_id,  # placeholder, will set next
+        #"testId": test_id, will add later
         "submitted_at": datetime.now(ZoneInfo("Asia/Kolkata")).isoformat(),
         "responses": responses,
         "ikigai_scores": ikigai_scores,
