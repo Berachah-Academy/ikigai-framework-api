@@ -307,7 +307,7 @@ def ikigai_feedback(req: IkigaiRequest):
 
     save_to_firebase(
         user=req.user,
-        test_id=req.testId,
+        test_id=None, # will be added later
         responses=req.responses,
         ikigai_scores=ikigai_scores,
         ikigai_score=float(ikigai_score),
