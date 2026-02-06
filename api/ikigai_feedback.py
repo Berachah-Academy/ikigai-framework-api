@@ -73,8 +73,7 @@ def save_to_firebase(user, test_id, finish_time, responses, ikigai_scores, ikiga
             "email": user.email,
             "phone": user.phone
         },
-        "submitted_at": datetime.now(ZoneInfo("Asia/Kolkata")).isoformat(),
-        "completed_at": finish_time,
+        "completedAt": finish_time,
         "responses": responses,
         "ikigai_scores": ikigai_scores,
         "ikigai_alignment_score": ikigai_score,
