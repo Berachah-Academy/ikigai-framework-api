@@ -47,7 +47,7 @@ def ikigai_feedback(req: IkigaiRequest):
         req.responses
     )
 
-    logger.info(f"Gemini feedback generated successfully using {gemini_key_id}")
+    logger.info(f"Gemini feedback generated successfully using key: {gemini_key_id}")
 
     save_to_firebase(
         user=req.user,

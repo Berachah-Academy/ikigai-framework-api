@@ -85,7 +85,7 @@ Do NOT include markdown, headings, bullets, emojis, or extra text. Only pure JSO
 """
     last_error = None
 
-    for api_key in GEMINI_API_KEYS:
+    for idx, api_key in enumerate(GEMINI_API_KEYS):
         if not api_key:
             continue
 
@@ -100,7 +100,7 @@ Do NOT include markdown, headings, bullets, emojis, or extra text. Only pure JSO
             raw_text = response.text.strip()
 
             feedback_json = json.loads(raw_text)
-            return feedback_json, api_key[-4:]
+            return feedback_json, idx + 1
 
         except json.JSONDecodeError:
             last_error = "Invalid JSON"
