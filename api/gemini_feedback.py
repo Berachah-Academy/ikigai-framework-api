@@ -100,9 +100,7 @@ Do NOT include markdown, headings, bullets, emojis, or extra text. Only pure JSO
             raw_text = response.text.strip()
 
             feedback_json = json.loads(raw_text)
-            print(f"Gemini success using API key ending with: {api_key[-4:]}")
-            
-            return feedback_json
+            return feedback_json, api_key[-4:]
 
         except json.JSONDecodeError:
             last_error = "Invalid JSON"
