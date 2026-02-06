@@ -59,50 +59,35 @@ def build_user_qna(responses):
 
 
 FIREBASE_DB_URL = "https://berachah-academy-default-rtdb.firebaseio.com"
-IKIGAI_NODE = "ikigai-assessment/user"
+IKIGAI_NODE = "ikigai/assessment-result"
 
-def save_to_firebase(user, test_id, responses, ikigai_scores, ikigai_score, feedback):
-    import re
+def save_to_firebase(user, test_id, finish_time, responses, ikigai_scores, ikigai_score, feedback):
 
-    # Firebase-safe user key
-    raw_key = user.email
-    user_key = re.sub(r'[.$#[\]/@]', "_", raw_key)
+    if not test_id:
+        print("Missing test_id, skipping Firebase save")
+        return
 
-    # Prepare new attempt payload
     payload = {
-        #"testId": test_id, will add later
+        "user": {
+            "username": user.username,
+            "email": user.email,
+            "phone": user.phone
+        },
         "submitted_at": datetime.now(ZoneInfo("Asia/Kolkata")).isoformat(),
+        "completed_at": finish_time,
         "responses": responses,
         "ikigai_scores": ikigai_scores,
         "ikigai_alignment_score": ikigai_score,
         "feedback": feedback
     }
 
-    # Base URL for this user
-    base_url = f"{FIREBASE_DB_URL}/{IKIGAI_NODE}/{user_key}"
+    base_url = f"{FIREBASE_DB_URL}/{IKIGAI_NODE}/{test_id}.json"
 
     try:
-        # Fetch existing user node
-        r = requests.get(f"{base_url}.json", timeout=6)
-        data = r.json() if r.ok and r.json() else {}
+        r = requests.put(base_url, json=payload, timeout=8)
 
-        # If user does not exist yet, create root info
-        if not data:
-            return
-        
-        # Normalize attempts list
-        attempts = data.get("attempts", [])
-        if not isinstance(attempts, list):
-            attempts = []
-
-        # Append new attempt
-        attempts.append(payload)
-        data["attempts"] = attempts
-
-        # Write back to Firebase
-        w = requests.put(f"{base_url}.json", json=data, timeout=6)
-        if not w.ok:
-            print("Firebase write failed:", w.status_code, w.text)
+        if not r.ok:
+            print("Firebase write failed:", r.status_code, r.text)
 
     except Exception as e:
         print("Firebase exception:", str(e))
@@ -123,6 +108,8 @@ class UserInfo(BaseModel):
 class IkigaiRequest(BaseModel):
     user: UserInfo
     responses: Dict[str, str]
+    testId: str | None = None
+    finishTime: str | None = None
 
 class ElementScores(BaseModel):
     love: float
@@ -307,12 +294,14 @@ def ikigai_feedback(req: IkigaiRequest):
 
     save_to_firebase(
         user=req.user,
-        test_id=None, # will be added later
+        test_id=req.testId,
+        finish_time=req.finishTime,
         responses=req.responses,
         ikigai_scores=ikigai_scores,
         ikigai_score=float(ikigai_score),
         feedback=feedback_json
     )
+
 
     return IkigaiResponse(
         ikigai_scores=ElementScores(**ikigai_scores),
