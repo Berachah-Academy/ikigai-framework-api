@@ -17,7 +17,7 @@ def save_to_firebase(user, test_id, finish_time, responses, ikigai_scores, ikiga
     user_key = re.sub(r'[.$#[\]/@]', "_", raw_key)
 
     payload = {
-        "user": userkey,
+        "user": user_key,
         "completedAt": finish_time,
         "responses": responses,
         "ikigai_scores": ikigai_scores,
