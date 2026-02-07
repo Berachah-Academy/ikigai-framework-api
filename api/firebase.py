@@ -13,11 +13,7 @@ def save_to_firebase(user, test_id, finish_time, responses, ikigai_scores, ikiga
         return
 
     payload = {
-        "user": {
-            "username": user.username,
-            "email": user.email,
-            "phone": user.phone
-        },
+        "user": user.email,
         "completedAt": finish_time,
         "responses": responses,
         "ikigai_scores": ikigai_scores,
