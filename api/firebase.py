@@ -1,3 +1,4 @@
+import re
 import requests
 
 FIREBASE_DB_URL = "https://berachah-academy-default-rtdb.firebaseio.com"
@@ -12,8 +13,11 @@ def save_to_firebase(user, test_id, finish_time, responses, ikigai_scores, ikiga
         print("Missing test_id, skipping Firebase save")
         return
 
+    raw_key = user.email
+    user_key = re.sub(r'[.$#[\]/@]', "_", raw_key)
+
     payload = {
-        "user": user.email,
+        "user": userkey,
         "completedAt": finish_time,
         "responses": responses,
         "ikigai_scores": ikigai_scores,
